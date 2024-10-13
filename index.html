@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Blog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121212;
+            color: #b8860b; /* Warna emas yang sedikit tua */
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        #background-gif {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: url('https://example.com/your-wallpaper-url.gif') no-repeat center center;
+            background-size: cover;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+            transition: transform 0.5s ease; /* Animasi untuk container */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            color: #b8860b;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.5); /* Line lebih tipis */
+            padding-bottom: 10px;
+            transition: opacity 0.5s ease; /* Animasi untuk judul */
+        }
+
+        .author {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.5); /* Line lebih tipis */
+            padding-bottom: 10px;
+            transition: opacity 0.5s ease; /* Animasi untuk author */
+        }
+
+        .gallery img {
+            width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 10px; /* Membuat gambar lebih tidak kaku */
+            cursor: pointer;
+            transition: transform 0.5s ease, opacity 0.5s ease; /* Animasi untuk gambar */
+            border: 2px solid #b8860b;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.03);
+        }
+
+        /* Spinner CSS */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #b8860b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Loader overlay */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            display: none; /* Initially hidden */
+        }
+
+        #image-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease; /* Animasi untuk pop-up */
+        }
+
+        #popup-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            transition: transform 0.5s ease; /* Animasi untuk isi pop-up */
+        }
+
+        #popup-content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid #b8860b;
+            transition: transform 0.5s ease; /* Animasi untuk gambar dalam pop-up */
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px;
+            background: rgba(184, 134, 11, 0.7); /* Emas tua yang sedikit transparan */
+            cursor: pointer;
+            font-size: 2rem;
+            border: none;
+            border-radius: 5px;
+            transition: background 0.3s ease, opacity 0.5s ease; /* Animasi untuk tombol geser */
+        }
+
+        .arrow:hover {
+            background: rgba(184, 134, 11, 0.9);
+        }
+
+        #prev {
+            left: 10px;
+        }
+
+        #next {
+            right: 10px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .author {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="background-gif"></div>
+
+<div class="container">
+    <h1>Screenshot Spesifikasi Akun</h1>
+    <p class="author">by Azrefta</p>
+
+    <div class="gallery" id="gallery"></div>
+</div>
+
+<!-- Loading Spinner -->
+<div class="loader" id="loader">
+    <div class="spinner"></div>
+</div>
+
+<!-- Image Popup -->
+<div id="image-popup">
+    <div id="popup-content">
+        <button class="arrow" id="prev">&#10094;</button>
+        <img id="popup-img" src="" alt="">
+        <button class="arrow" id="next">&#10095;</button>
+    </div>
+</div>
+
+<script>
+    // Array of image URLs
+    const imageUrls = [
+        "https://cdn.discordapp.com/attachments/1191748338102579251/1295147344316203008/IMG-20241014-WA0004.jpg?ex=670d9775&is=670c45f5&hm=0d080f3749876c59559d35b9a543195bf58c13e5cada3486192a39c754cbf6bf&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147735787245630/Screenshot_20241014-042732.jpg?ex=670d97d2&is=670c4652&hm=808ac8ab71831d86a1ae8a06a4c8162b93b6a1bba80259da68ab1b7d25dc3c8b&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147736152412171/Screenshot_20241014-042720.jpg?ex=670d97d2&is=670c4652&hm=ab9dd4862a97eac1177736b41a16a96abe701da8893f563db555c3e1936880c5&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147736714444811/Screenshot_20241014-042741.jpg?ex=670d97d3&is=670c4653&hm=f9c6bb80aa5eb5de8f87c0f1d5915ff91c8ea3e4bcff9310ae2b3f0d1739bc6a&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147737070964766/Screenshot_20241014-042747.jpg?ex=670d97d3&is=670c4653&hm=f819f8da9665d25e6cbe9f5c89255cd4822b65da5106b066bb735a5b860219ee&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147737385533512/Screenshot_20241014-042914.jpg?ex=670d97d3&is=670c4653&hm=6f2a34e09a760aabdfbfba0d564a89bb2037dd6b3e3de6b377df367b7f89c838&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147737679138938/Screenshot_20241014-042936.jpg?ex=670d97d3&is=670c4653&hm=13dce9258ab3ea9a0e3d0ffdb99b6e3be0d26568515f19716b24e258264cc86a&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147738014679081/Screenshot_20241014-042942.jpg?ex=670d97d3&is=670c4653&hm=b224e92f3ce6741d6cb5d386c088d8bac1bbf07121decf16a2eb938484ec50c1&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147738308284497/Screenshot_20241014-043115.jpg?ex=670d97d3&is=670c4653&hm=af30c39bbe9f70340f655740104ff23925c1c45ae533b60da9870935562250bf&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147738593235046/Screenshot_20241014-043121.jpg?ex=670d97d3&is=670c4653&hm=1cfd62fec45df79b86958f710ed4e76a2061e064491e78a8ea89e923be82e955&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147739012792431/Screenshot_20241014-043127.jpg?ex=670d97d3&is=670c4653&hm=12a57e78dfdede7c68951a04a4437a9dd44da2c1a6b8a6f13443dd3d9524fe83&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147810051850271/Screenshot_20241014-043224.jpg?ex=670d97e4&is=670c4664&hm=3269e9c563265505f71e7f67d214a5eb602b28492f59149371d5a0baf22c8bdb&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147810383069274/Screenshot_20241014-043242.jpg?ex=670d97e4&is=670c4664&hm=3babc2b63f744cd914d72f1cefdd92b8d3f37d975cb93bfcdd0e743370a9171a&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147810672607242/Screenshot_20241014-043248.jpg?ex=670d97e4&is=670c4664&hm=1520dbfce49154bca436748f4ccd984556ca3c1a7773ce9c13870ab2fdfefdc5&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147811020607549/Screenshot_20241014-043348.jpg?ex=670d97e4&is=670c4664&hm=9dc85959f674af31b1668cb4a53e2f61c376f6d46c84a0d46d67948d13d2d94f&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147811305947176/Screenshot_20241014-043403.jpg?ex=670d97e4&is=670c4664&hm=e8c9f41aa1660bf75ab655224ea48e27add6f5b0ed6e8c4cb7175f5156c29ea5&","https://cdn.discordapp.com/attachments/1191748338102579251/1295147811591028837/Screenshot_20241014-043432.jpg?ex=670d97e4&is=670c4664&hm=76aa75f7590e6df45335e23c6b84ab242f1863064fb0b2490a609086f900f58f&"
+    ];
+
+    const gallery = document.getElementById('gallery');
+    const imagePopup = document.getElementById('image-popup');
+    const popupImg = document.getElementById('popup-img');
+    const loader = document.getElementById('loader');
+    const next = document.getElementById('next');
+    const prev = document.getElementById('prev');
+
+    let currentIndex = 0;
+
+    // Dynamically generate the gallery
+    imageUrls.forEach((url, index) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.setAttribute('data-index', index);
+        img.addEventListener('click', function () {
+            currentIndex = index;
+            openPopup();
+        });
+        img.setAttribute('oncontextmenu', 'return false;'); // Disable right-click on images
+        gallery.appendChild(img);
+    });
+
+    function openPopup() {
+        loader.style.display = 'flex'; // Show the loader
+        popupImg.src = ''; // Reset the image source
+        setTimeout(() => {
+            popupImg.src = imageUrls[currentIndex];
+            popupImg.onload = () => {
+                loader.style.display = 'none'; // Hide the loader once the image is loaded
+                imagePopup.style.display = 'flex';
+                setTimeout(() => {
+                    imagePopup.style.opacity = '1'; // Fade-in effect for popup
+                }, 50);
+            };
+        }, 100);
+    }
+
+    next.addEventListener('click', function (e) {
+        e.stopPropagation(); // Prevent closing pop-up when clicking buttons
+        currentIndex = (currentIndex + 1) % imageUrls.length;
+        openPopup();
+    });
+
+    prev.addEventListener('click', function (e) {
+        e.stopPropagation(); // Prevent closing pop-up when clicking buttons
+        currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+        openPopup();
+    });
+
+    imagePopup.addEventListener('click', function (e) {
+        if (e.target !== popupImg) {
+            imagePopup.style.opacity = '0'; // Fade-out effect for popup
+            setTimeout(() => {
+                imagePopup.style.display = 'none';
+}, 500); // Match duration of fade-out animation
+        }
+    });
+
+    // Disable downloading images in pop-up and main site
+    document.addEventListener('contextmenu', function (event) {
+        if (event.target.tagName === 'IMG') {
+            event.preventDefault(); // Disable right-click download
+        }
+    });
+
+    // Enable zooming on images inside the pop-up using two fingers
+    let scale = 1;
+    popupImg.addEventListener('gesturestart', function (event) {
+        event.preventDefault();
+        scale = event.scale;
+    });
+
+    popupImg.addEventListener('gesturechange', function (event) {
+        event.preventDefault();
+        popupImg.style.transform = `scale(${scale * event.scale})`;
+    });
+
+    popupImg.addEventListener('gestureend', function (event) {
+        event.preventDefault();
+        scale *= event.scale;
+        popupImg.style.transform = `scale(${scale})`;
+    });
+</script>
+
+</body>
+</html>
